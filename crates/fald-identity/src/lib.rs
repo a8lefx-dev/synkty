@@ -32,8 +32,8 @@ mod tests {
     #[test]
     fn alphabet_is_crockford() {
         assert_eq!(ALPHABET.len(), 32);
-        for bad in [b'I', b'L', b'O', b'U'] {
-            assert!(!ALPHABET.contains(&bad));
+        for bad in b"ILOU" {
+            assert!(!ALPHABET.contains(bad));
         }
     }
 }
