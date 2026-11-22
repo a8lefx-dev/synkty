@@ -4,6 +4,16 @@ Provenance: `moonshotai/Kimi-K3.1-Pro` over CommandCode, one-shot call, Sun 2026
 Input 36,711 tok / output 13,786 tok (10,709 of them reasoning) = **$0.211** at $2/$10 per M.
 Prompt = the four design docs in this folder; no other context.
 
+How later passes run (decision, 2026-11-22): **per job, never the delegation pin.** My subagents
+stay on deepseek-v4.1-flash; each planning pass is its own one-shot process:
+
+    tools/kimi-plan.sh docs/plan-v2.md "the task" docs/a.md docs/b.md
+
+It calls `hermes -z ... -m moonshotai/Kimi-K3.1-Pro --provider commandcode --usage-file`,
+writes the answer with a provenance header, and appends tokens + cost to `docs/plan-log.md`.
+Floor cost per pass is ~30k input tokens (~$0.06) because every call carries the agent system
+prompt; the pass below measured $0.211.
+
 Status: proposal, not adopted. Three of its findings were defects in my own docs and are already
 fixed in `crypto-and-log.md`: the 16-vs-10-byte device id contradiction, the missing `prev`
 field in the entry body, and the `apply → append` ordering that was not write-ahead logging.
