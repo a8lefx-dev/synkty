@@ -55,6 +55,9 @@ head = (f"# Kimi planning pass\n\nprovenance: `{model}` over commandcode, one-sh
         f"task: {task.strip().splitlines()[0][:160]}\n"
         f"usage: in {tin:,} tok / out {tout:,} tok = **${cost:.3f}**\n\n---\n\n")
 out = pathlib.Path(out_p); out.parent.mkdir(parents=True, exist_ok=True)
+# Keep the raw usage report beside the answer: api_calls explains the input-token
+# multiplier when the run takes several turns.
+import shutil; shutil.copyfile(usage_p, str(out) + ".usage.json")
 out.write_text(head + body + "\n", encoding="utf-8")
 log = out.parent / "plan-log.md"
 new = not log.exists()
@@ -62,5 +65,5 @@ with log.open("a", encoding="utf-8") as f:
     if new:
         f.write("# Planning passes (per-job Kimi)\n\n| when | output | in | out | cost |\n|---|---|---|---|---|\n")
     f.write(f"| {stamp} | `{out.name}` | {tin:,} | {tout:,} | ${cost:.3f} |\n")
-print(f"kimi-plan: wrote {out_p}  in={tin:,} out={tout:,}  cost=${cost:.3f}")
+print(f"kimi-plan: wrote {out_p}  in={tin:,} out={tout:,} api_calls={u.get('api_calls')}  cost=${cost:.3f}")
 PY
