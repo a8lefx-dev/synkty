@@ -8,6 +8,10 @@ Source of truth for the outline:
 <https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/gh-600>
 (verified 2026-11-22).
 
+**Scope decision (Able, 2026-11-22): no GitHub Copilot.** Able's agent is Odin and GitHub is used
+in full. Section 3a translates the Copilot vocabulary the exam uses into the mechanism we actually
+run, so a Copilot-worded item stays answerable.
+
 ## 1. What is actually measured
 
 Six domains, with the weights published in the study guide:
@@ -59,13 +63,34 @@ open an issue that states the artifact → implement it on a branch → open a P
 | week | dates | domain | Prin's sets | artifact shipped in synkty | GitHub skill learned |
 |---|---|---|---|---|---|
 | 1 | 11-23 → 11-29 | **D1** architecture + SDLC, planning distinct from execution | q01–q03, e1 diagnostic | `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/agent-task.yml`, plan-before-action rule, `docs/decisions/0001-*.md` | issues as units of intent, labels, milestone, first PR review |
-| 2 | 11-30 → 12-06 | **D2** tools, MCP, execution context | q04–q07, e1 retake | `.github/workflows/agent.yml` with scoped `GITHUB_TOKEN`, `mcp.json` allow list, retry/rollback job, `docs/traceability.md` | Actions syntax, job permissions, environments, artifacts, branch-based scope |
+| 2 | 11-30 → 12-06 | **D2** tools, MCP, execution context | q04–q07, e1 retake | GitHub MCP server wired to Odin behind an allow list, `.github/workflows/agent.yml` with scoped `GITHUB_TOKEN`, retry/rollback job, `docs/traceability.md` | Actions syntax, job permissions, environments, branch-based scope, MCP registries |
 | 3 | 12-07 → 12-13 | **D3 + D4** state/durable artifacts, evaluation and root-cause | q08–q13 | ADR folder as resumable state, issue-comment handoff protocol, `tools/eval/` + a CI job that emits a requirement→test report | artifacts as evidence, check runs, status gates, required checks |
 | 4 | 12-14 → 12-17 | **D5 + D6** orchestration, guardrails, accountability | q14–q20, e2, e3, mock | two agents on isolated branches with conflict detection; `CODEOWNERS`, branch protection, least-privilege matrix, audit note | protected branches, required reviews, CODEOWNERS, merge queue discipline |
 | — | after 12-17 | finish 0.1.0 Welcoming | — | real code | the same loop, now as the product's own process |
 
 Exam day is Thursday of week 4. The mock paper should be sat **before** 12-14, timed, closed book:
 120 minutes, same as the real thing.
+
+## 3a. Copilot is not in this repo — the translation table
+
+The exam's vocabulary is Copilot's. We practise each objective with our own tooling, and you learn
+the noun as well as the mechanic, so the wording does not cost you marks.
+
+| exam says | we run | where |
+|---|---|---|
+| custom instructions | the agent brief in `CONTRIBUTING.md` plus `docs/agent-rules.md` | W1 |
+| custom agents | Odin's subagents, each with one written role and a scope | W4 |
+| tools and tool permissions | MCP servers with an explicit allow list and a scoped token | W2 |
+| add an MCP server as a tool | the GitHub MCP server, wired to Odin | W2 |
+| GitHub remote MCP server | the same server over its remote endpoint, not a local stdio shim | W2 |
+| MCP registries / allow lists | a checked-in `mcp.json` naming only permitted servers | W2 |
+| Copilot setup steps | the workflow steps that provision the agent before it runs | W2 |
+| branch-based scope | the agent works only on the issue branch; `main` is protected | W2, W4 |
+| agent creates branches and pull requests | Odin does it, with the PR labelled `agent-authored` | W1 onward |
+
+Rule of thumb: if an item names a Copilot screen you have never opened, answer the *principle* —
+scope, permission, plan-before-action, review, evidence — because the four options almost always
+differ on the principle, not the menu path.
 
 ## 4. Operating rules (the "GitHub philosophy" part)
 
@@ -91,9 +116,8 @@ These are stated once and then followed, because the exam tests judgement about 
 
 ## 5. What the track does not cover, and what we do about it
 
-- **No hands-on Copilot configuration.** The exam assumes experience with custom instructions,
-  custom agents, and Copilot setup steps. We practise the equivalents here with an agent that runs
-  in CI, and I will walk you through Copilot's own screens when we reach D2.
+- **Copilot-specific surfaces.** Nothing here uses Copilot, by your call; the translation table in
+  3a maps each noun the exam uses onto the mechanism we run, and nothing else is needed.
 - **No repository to break.** Everything is safe in theory; that is why week 1 starts by giving
   the repo protection, labels, and a real PR.
 - **No evaluation tooling.** D4.1.4 wants automated scanning; the track has no lab for it. Week 3
@@ -101,14 +125,15 @@ These are stated once and then followed, because the exam tests judgement about 
 - **No multi-agent conflict.** D5.1.3 is about overlapping code changes and duplicated effort; you
   cannot learn that from a quiz. Week 4 runs two agents on two branches and resolves the collision.
 
-## 6. What I need from you
+## 6. State of play
 
-1. **Approve this shape** (a week is a domain, one artifact each), or move a domain.
-2. **Decide the study cadence**: how many evenings this week, and whether the mock is Sat 12-12 or
-   Sun 12-13.
-3. **Branch protection**: to make rule 3 real, `main` needs protection enabled in GitHub settings —
-   that is a click you should make, or tell me to walk you through it, because it changes how the
-   repo accepts work.
+Approved 2026-11-22: one domain per week, no Copilot, GitHub used in full. Still open:
+
+1. **Cadence** — which evenings this week, and whether the mock is Sat 12-12 or Sun 12-13.
+2. **Branch protection on `main`** — a click in Settings → Branches that only the owner can make.
+   Without it, rule 3 is a promise, not a control.
+3. **GitHub MCP server for Odin in week 2** — I will propose the exact config before anything is
+   enabled, because it hands an agent a GitHub token and that is your decision, not mine.
 
 Nothing in the repository has been restructured yet. When you say go, the first action is
 deliberately small: create the labels and milestone, open issue #1 ("D1: state the agent task
