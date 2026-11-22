@@ -37,7 +37,9 @@ hybrid signature can be added without a flag day. We do not hand-roll ML-KEM.
 ## Keys
 
 - **Device key** (Ed25519): generated on the device, never exported. Device ID =
-  `base32(BLAKE3(pubkey)[..16])` + check group → 20 characters, not 56.
+  `base32(BLAKE3("synkty/device-id/v1" || pubkey)[..10])` + a 20-bit check group → 20 display
+  symbols (10 raw bytes), not 56. `docs/protocol.md` §1.2 is normative for this; 16 bytes would
+  have been 26 symbols, which is where the two documents disagreed.
 - **Vault key** (X25519, per vault): wrapped to each member device, so adding a device does not
   re-encrypt the vault.
 - **Session keys**: derived per connection from the TLS 1.3 handshake; nothing long-lived.
@@ -69,8 +71,10 @@ header (8 bytes)
   magic "SKLE" | ver u8 (suite) | kind u8 | flags u8 | reserved 0x00
 
 body
-  dev    [u8;16]    author device id (raw bytes, not base32)
+  dev    [u8;10]    author device id (raw bytes, not base32)
   seq    u64        monotonic per device, no gaps
+  prev   [u8;32]    BLAKE3 of the previous entry, including its signature
+                    (zeros only at seq 0) — the chain link, carried in the bytes
   seen   map<dev,seq>   vector clock: what this author had observed at write time
   path   bytes      NFC, vault-relative
   blob   [u8;32]    BLAKE3 of resulting content; zeros for delete
@@ -141,8 +145,9 @@ is valid only if no revocation of its author is in that entry's causal past (i.e
 
 ## Integration points
 
-- **Apply path**: verify → resolve merge → apply → append. No entry, no write. The log is not a
-  side-car to the sync engine; it *is* the sync engine's write-ahead record.
+- **Apply path**: verify → append + fsync → apply atomically (temp file + rename) → advance the
+  applied cursor. Appending *before* touching the vault is what makes it write-ahead logging;
+  the earlier "apply then append" ordering would have allowed unlogged writes after a crash.
 - **Relay**: never sees plaintext, and never signs anything. It forwards frames; it is not part
   of the trust graph at all. A malicious relay can drop or delay traffic (a denial of service),
   and cannot forge, reorder undetectably, or read.
