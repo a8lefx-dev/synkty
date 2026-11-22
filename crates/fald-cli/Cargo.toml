@@ -1,0 +1,15 @@
+[package]
+name = "fald-cli"
+description = "Command line for synkty: identity, pairing, devices"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "fald"
+path = "src/main.rs"
+
+[dependencies]
+fald-identity = { path = "../fald-identity" }

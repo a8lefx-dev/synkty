@@ -1,0 +1,10 @@
+[package]
+name = "fald-identity"
+description = "Device identity, pairing, grants and revocation for synkty"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
