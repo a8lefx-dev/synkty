@@ -59,9 +59,26 @@ nothing but a dependency.
 - No holding customer funds before there is an entity and an accountant.
 - No chain writes in the sync path, ever — sync must work with no network and no money.
 
+## The free path wins (Able, 2026-11-22)
+
+XRP is never the cheap option, because holding it is a position: 1 XRP base reserve is a real
+asset you buy and custody, plus a wallet, a key, and monitoring. The free equivalents do the
+same job:
+
+| need | free option | cost of the XRP option |
+|---|---|---|
+| third-party timestamp on a checkpoint | OpenTimestamps (free, Bitcoin-anchored, no wallet) or signed checkpoint files as GitHub release assets | wallet + 1 XRP reserve + custody |
+| distributing binaries | GitHub Releases | nothing gained |
+| paying us | nothing until there is revenue; then a processor takes a % of money that only exists because someone paid | same fee, plus our own custody risk |
+
+So: **anchor for free or not at all, pay nothing, hold no assets.** XRP stays a documented
+option, not a dependency, and the checkpoint format means it can be adopted later without a
+protocol change if a customer ever asks for it.
+
 ## The decision
 
-1. **Anchoring**: post-v1, opt-in, and only if a real user asks for third-party timestamping.
+1. **Anchoring**: free path first (OpenTimestamps or signed release assets). XRPL only if a real
+   user asks for a chain anchor and is willing to pay for the wallet it requires.
 2. **Payments**: post-entity (Jan 2027), USD-priced, processor-custodied.
 3. **Now**: nothing. Recorded here so the option is not lost, and so nobody "adds XRP" to M0-M5
    and spends the June buffer on it.
