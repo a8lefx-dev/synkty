@@ -9,5 +9,8 @@
 //!   fald devices revoke <id>    stop trusting a device, locally and on the wire
 
 fn main() {
-    println!("fald {} (M0 not implemented yet)", env!("CARGO_PKG_VERSION"));
+    println!(
+        "fald {} (M0 not implemented yet)",
+        env!("CARGO_PKG_VERSION")
+    );
 }
